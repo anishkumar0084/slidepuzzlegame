@@ -27,13 +27,13 @@
         
         header {
             text-align: center;
-            padding: 10px 0;
+            padding: 8px 0;
             width: 100%;
             flex-shrink: 0;
         }
         
         h1 {
-            font-size: 1.5rem;
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
             margin-bottom: 5px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
             background: linear-gradient(to right, #ff7e5f, #feb47b);
@@ -44,10 +44,10 @@
         .game-container {
             width: 95%;
             max-width: 400px;
-            height: calc(100vh - 150px);
+            height: calc(100vh - 120px);
             background: rgba(0, 0, 30, 0.7);
             border-radius: 15px;
-            padding: 15px;
+            padding: 12px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
             display: flex;
             flex-direction: column;
@@ -58,20 +58,21 @@
             display: flex;
             justify-content: space-between;
             background: rgba(0, 0, 50, 0.5);
-            padding: 10px;
+            padding: 8px;
             border-radius: 10px;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-size: clamp(0.7rem, 2.5vw, 0.9rem);
         }
         
         .stat {
             display: flex;
             flex-direction: column;
             align-items: center;
+            flex: 1;
         }
         
         .stat-value {
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 3vw, 1.3rem);
             font-weight: bold;
             color: #ff7e5f;
         }
@@ -84,7 +85,7 @@
             display: flex;
             justify-content: center;
             gap: 8px;
-            margin: 10px 0;
+            margin: 8px 0;
             flex-wrap: wrap;
         }
         
@@ -92,18 +93,20 @@
             background: linear-gradient(to right, #ff7e5f, #feb47b);
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 10px 16px;
             border-radius: 50px;
-            font-size: 0.8rem;
+            font-size: clamp(0.7rem, 2.5vw, 0.9rem);
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            min-width: 80px;
+            min-width: 100px;
+            touch-action: manipulation;
         }
         
-        button:active {
+        button:active, button:hover {
             transform: scale(0.95);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
         
         .puzzle-container {
@@ -114,6 +117,7 @@
             border-radius: 8px;
             overflow: hidden;
             margin: 0 auto;
+            min-height: 250px;
         }
         
         .puzzle-board {
@@ -124,32 +128,42 @@
             height: 100%;
             display: grid;
             grid-gap: 2px;
-            padding: 3px;
+            padding: 4px;
         }
         
         .puzzle-tile {
-            background-size: 400% 400%;
+            background: linear-gradient(135deg, #4CAF50, #2E8B57);
             border-radius: 5px;
-            cursor: pointer;
-            transition: transform 0.15s ease;
+            transition: all 0.15s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: clamp(0.9rem, 4vw, 1.5rem);
             font-weight: bold;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.9);
             text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-            background: linear-gradient(135deg, #4CAF50, #2E8B57);
+            touch-action: none;
+            user-select: none;
+            position: relative;
         }
         
         .puzzle-tile:active {
-            transform: scale(0.96);
+            transform: scale(0.98);
+            background: linear-gradient(135deg, #45a049, #2d7d32);
+        }
+        
+        .puzzle-tile:hover {
+            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
         }
         
         .empty {
             background: rgba(30, 30, 60, 0.5) !important;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.7);
-            cursor: default;
+        }
+        
+        .empty:active, .empty:hover {
+            transform: none;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.7);
         }
         
         .message {
@@ -166,7 +180,7 @@
             pointer-events: none;
             transition: all 0.3s ease;
             width: 90%;
-            max-width: 300px;
+            max-width: 320px;
             border: 2px solid;
             box-shadow: 0 0 20px rgba(0,0,0,0.7);
         }
@@ -178,12 +192,12 @@
         }
         
         .message h2 {
-            font-size: 1.5rem;
+            font-size: clamp(1.2rem, 4vw, 1.6rem);
             margin-bottom: 10px;
         }
         
         .message p {
-            font-size: 1rem;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
             margin-bottom: 15px;
             line-height: 1.4;
         }
@@ -216,7 +230,7 @@
         footer {
             margin-top: 5px;
             text-align: center;
-            font-size: 0.7rem;
+            font-size: clamp(0.6rem, 2vw, 0.8rem);
             color: rgba(255, 255, 255, 0.7);
             width: 100%;
             flex-shrink: 0;
@@ -227,25 +241,63 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 12px 20px;
             border-radius: 20px;
             color: white;
             font-weight: bold;
             z-index: 10;
             opacity: 0;
             transition: opacity 0.3s;
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            white-space: nowrap;
         }
         
         .solution-notice.show {
             opacity: 1;
+        }
+        
+        /* Improved responsiveness for smaller screens */
+        @media (max-height: 600px) {
+            .game-container {
+                height: calc(100vh - 100px);
+                padding: 10px;
+            }
+            
+            .stats {
+                padding: 6px;
+                margin-bottom: 6px;
+            }
+            
+            .controls {
+                margin: 6px 0;
+            }
+            
+            button {
+                padding: 8px 12px;
+                min-width: 80px;
+            }
+        }
+        
+        @media (max-width: 350px) {
+            .puzzle-tile {
+                font-size: 1rem;
+            }
+            
+            .stats {
+                font-size: 0.7rem;
+            }
+            
+            .stat-value {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
     <header>
         <h1>Puzzle Challenge</h1>
-        <p style="font-size: 0.8rem;">Solve before time runs out!</p>
+        <p style="font-size: clamp(0.7rem, 2.5vw, 0.9rem);">Swipe to slide tiles!</p>
     </header>
     
     <div class="game-container">
@@ -275,7 +327,7 @@
     </div>
     
     <div id="win-message" class="message win-message">
-        <h2>Congratulations!</h2>
+        <h2>🎉 Congratulations!</h2>
         <p>You solved the puzzle!</p>
         <p>Moves: <span id="final-moves">0</span></p>
         <p>Time Left: <span id="final-time">02:00</span></p>
@@ -283,7 +335,7 @@
     </div>
     
     <div id="lose-message" class="message lose-message">
-        <h2>Time's Up!</h2>
+        <h2>⏰ Time's Up!</h2>
         <p>You didn't solve the puzzle in time.</p>
         <p>Grid: <span id="failed-grid">4x4</span></p>
         <p>Moves: <span id="failed-moves">0</span></p>
@@ -291,7 +343,7 @@
     </div>
     
     <footer>
-        <p>Puzzle Challenge</p>
+        <p>Puzzle Challenge - Slide to solve!</p>
     </footer>
 
     <script>
@@ -318,7 +370,14 @@
             tiles: [],
             emptyIndex: 15,
             solutionShown: false,
-            originalTiles: [] // To store state before showing solution
+            originalTiles: [], // To store state before showing solution
+            solutionTimeout: null,
+            // Touch/swipe state
+            touchStartX: 0,
+            touchStartY: 0,
+            touchEndX: 0,
+            touchEndY: 0,
+            minSwipeDistance: 30
         };
         
         // Time limits based on grid size (in seconds)
@@ -348,6 +407,12 @@
         
         // Initialize the game with random grid size
         function initGame() {
+            // Clear any existing timeouts
+            if (gameState.solutionTimeout) {
+                clearTimeout(gameState.solutionTimeout);
+                gameState.solutionTimeout = null;
+            }
+            
             // Random grid size (3x3, 4x4, or 5x5)
             const sizes = [3, 4, 5];
             gameState.size = sizes[Math.floor(Math.random() * sizes.length)];
@@ -359,11 +424,23 @@
             gameAnalytics.gameId = generateId();
             gameAnalytics.startTime = new Date().toISOString();
             gameAnalytics.solutionViewed = false;
+            gameAnalytics.moves = 0;
             
+            // Reset game state
             stopTimer();
             gameState.moves = 0;
             gameState.gameActive = true;
             gameState.solutionShown = false;
+            
+            // Hide any visible messages
+            elements.winMessage.classList.remove('show');
+            elements.loseMessage.classList.remove('show');
+            elements.solutionNotice.classList.remove('show');
+            
+            // Enable solve button
+            elements.solveBtn.disabled = false;
+            elements.solveBtn.textContent = 'Show Solution';
+            
             updateMoveCount();
             updateTimerDisplay();
             
@@ -398,13 +475,18 @@
                     tile.innerHTML = gameState.tiles[i];
                 }
                 
-                tile.addEventListener('click', () => moveTile(i));
                 elements.board.appendChild(tile);
             }
+            
+            // Add swipe/touch events to the board
+            addSwipeEvents();
         }
         
         // Shuffle tiles ensuring solvable puzzle
         function shuffleTiles() {
+            let attempts = 0;
+            const maxAttempts = 100;
+            
             do {
                 // Fisher-Yates shuffle
                 for (let i = gameState.tiles.length - 1; i > 0; i--) {
@@ -414,9 +496,56 @@
                 
                 // Find empty tile
                 gameState.emptyIndex = gameState.tiles.indexOf(0);
+                attempts++;
+                
+                // Prevent infinite loop
+                if (attempts > maxAttempts) {
+                    // Force a solvable state by making a few random valid moves
+                    gameState.tiles = Array.from({ length: gameState.size * gameState.size - 1 }, (_, i) => i + 1);
+                    gameState.tiles.push(0);
+                    gameState.emptyIndex = gameState.size * gameState.size - 1;
+                    
+                    // Make random moves to shuffle
+                    for (let i = 0; i < 100; i++) {
+                        const possibleMoves = getPossibleMoves();
+                        if (possibleMoves.length > 0) {
+                            const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                            [gameState.tiles[gameState.emptyIndex], gameState.tiles[randomMove]] = 
+                            [gameState.tiles[randomMove], gameState.tiles[gameState.emptyIndex]];
+                            gameState.emptyIndex = randomMove;
+                        }
+                    }
+                    break;
+                }
             } while (!isSolvable() || isAlreadySolved());
             
             updateBoard();
+        }
+        
+        // Get possible moves for empty tile
+        function getPossibleMoves() {
+            const moves = [];
+            const emptyRow = Math.floor(gameState.emptyIndex / gameState.size);
+            const emptyCol = gameState.emptyIndex % gameState.size;
+            
+            // Check all 4 directions
+            const directions = [
+                { row: -1, col: 0 }, // up
+                { row: 1, col: 0 },  // down
+                { row: 0, col: -1 }, // left
+                { row: 0, col: 1 }   // right
+            ];
+            
+            directions.forEach(dir => {
+                const newRow = emptyRow + dir.row;
+                const newCol = emptyCol + dir.col;
+                
+                if (newRow >= 0 && newRow < gameState.size && newCol >= 0 && newCol < gameState.size) {
+                    moves.push(newRow * gameState.size + newCol);
+                }
+            });
+            
+            return moves;
         }
         
         // Check if puzzle is already solved (to prevent showing solved puzzle after shuffle)
@@ -453,6 +582,11 @@
         function showSolution() {
             if (!gameState.gameActive || gameState.solutionShown) return;
             
+            // Clear any existing timeout
+            if (gameState.solutionTimeout) {
+                clearTimeout(gameState.solutionTimeout);
+            }
+            
             // Save current state
             gameState.originalTiles = [...gameState.tiles];
             gameState.originalEmptyIndex = gameState.emptyIndex;
@@ -465,17 +599,22 @@
             
             // Show notice
             elements.solutionNotice.classList.add('show');
+            elements.solveBtn.disabled = true;
+            elements.solveBtn.textContent = 'Showing...';
             
             // Mark solution viewed in analytics
             gameAnalytics.solutionViewed = true;
             
             // Return to game after 5 seconds
-            setTimeout(() => {
+            gameState.solutionTimeout = setTimeout(() => {
                 elements.solutionNotice.classList.remove('show');
                 gameState.solutionShown = false;
                 gameState.tiles = [...gameState.originalTiles];
                 gameState.emptyIndex = gameState.originalEmptyIndex;
                 updateBoard();
+                elements.solveBtn.disabled = false;
+                elements.solveBtn.textContent = 'Show Solution';
+                gameState.solutionTimeout = null;
             }, 5000);
         }
         
@@ -497,26 +636,109 @@
             }
         }
         
-        // Move tile
-        function moveTile(index) {
+        // Add swipe events to the puzzle board
+        function addSwipeEvents() {
+            const board = elements.board;
+            
+            // Mouse events for desktop
+            board.addEventListener('mousedown', handleStart, false);
+            board.addEventListener('mousemove', handleMove, false);
+            board.addEventListener('mouseup', handleEnd, false);
+            
+            // Touch events for mobile
+            board.addEventListener('touchstart', handleStart, false);
+            board.addEventListener('touchmove', handleMove, false);
+            board.addEventListener('touchend', handleEnd, false);
+        }
+        
+        function handleStart(e) {
             if (!gameState.gameActive || gameState.solutionShown) return;
             
+            e.preventDefault();
+            const touch = e.touches ? e.touches[0] : e;
+            gameState.touchStartX = touch.clientX;
+            gameState.touchStartY = touch.clientY;
+        }
+        
+        function handleMove(e) {
+            if (!gameState.gameActive || gameState.solutionShown) return;
+            e.preventDefault();
+        }
+        
+        function handleEnd(e) {
+            if (!gameState.gameActive || gameState.solutionShown) return;
+            
+            e.preventDefault();
+            const touch = e.changedTouches ? e.changedTouches[0] : e;
+            gameState.touchEndX = touch.clientX;
+            gameState.touchEndY = touch.clientY;
+            
+            handleSwipe();
+        }
+        
+        function handleSwipe() {
+            const deltaX = gameState.touchEndX - gameState.touchStartX;
+            const deltaY = gameState.touchEndY - gameState.touchStartY;
+            
+            const absDeltaX = Math.abs(deltaX);
+            const absDeltaY = Math.abs(deltaY);
+            
+            // Check if swipe distance is sufficient
+            if (Math.max(absDeltaX, absDeltaY) < gameState.minSwipeDistance) {
+                return;
+            }
+            
+            // Determine swipe direction
+            let direction = null;
+            if (absDeltaX > absDeltaY) {
+                // Horizontal swipe
+                direction = deltaX > 0 ? 'right' : 'left';
+            } else {
+                // Vertical swipe
+                direction = deltaY > 0 ? 'down' : 'up';
+            }
+            
+            // Move empty tile in opposite direction of swipe
+            // (because we're sliding tiles into the empty space)
+            moveEmptyTile(direction);
+        }
+        
+        function moveEmptyTile(swipeDirection) {
             const emptyRow = Math.floor(gameState.emptyIndex / gameState.size);
             const emptyCol = gameState.emptyIndex % gameState.size;
-            const tileRow = Math.floor(index / gameState.size);
-            const tileCol = index % gameState.size;
             
-            // Check if tile is adjacent to empty space
-            const rowDiff = Math.abs(emptyRow - tileRow);
-            const colDiff = Math.abs(emptyCol - tileCol);
+            let targetRow = emptyRow;
+            let targetCol = emptyCol;
             
-            if ((rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1)) {
-                // Swap tiles
-                [gameState.tiles[gameState.emptyIndex], gameState.tiles[index]] = 
-                [gameState.tiles[index], gameState.tiles[gameState.emptyIndex]];
+            // Move empty tile opposite to swipe direction
+            switch (swipeDirection) {
+                case 'up':
+                    targetRow = emptyRow + 1; // Move empty down when user swipes up
+                    break;
+                case 'down':
+                    targetRow = emptyRow - 1; // Move empty up when user swipes down
+                    break;
+                case 'left':
+                    targetCol = emptyCol + 1; // Move empty right when user swipes left
+                    break;
+                case 'right':
+                    targetCol = emptyCol - 1; // Move empty left when user swipes right
+                    break;
+            }
+            
+            // Check if target position is valid
+            if (targetRow >= 0 && targetRow < gameState.size && 
+                targetCol >= 0 && targetCol < gameState.size) {
                 
-                gameState.emptyIndex = index;
+                const targetIndex = targetRow * gameState.size + targetCol;
+                
+                // Swap tiles
+                [gameState.tiles[gameState.emptyIndex], gameState.tiles[targetIndex]] = 
+                [gameState.tiles[targetIndex], gameState.tiles[gameState.emptyIndex]];
+                
+                gameState.emptyIndex = targetIndex;
                 gameState.moves++;
+                gameAnalytics.moves = gameState.moves;
                 updateMoveCount();
                 updateBoard();
                 
@@ -562,6 +784,12 @@
             stopTimer();
             gameState.gameActive = false;
             
+            // Clear solution timeout if active
+            if (gameState.solutionTimeout) {
+                clearTimeout(gameState.solutionTimeout);
+                gameState.solutionTimeout = null;
+            }
+            
             // Update analytics
             gameAnalytics.endTime = new Date().toISOString();
             gameAnalytics.result = isWin ? 'win' : 'lose';
@@ -576,8 +804,9 @@
         
         // Timer functions
         function startTimer() {
-            if (!gameState.timer) {
-                gameState.timer = setInterval(() => {
+            stopTimer(); // Clear any existing timer
+            gameState.timer = setInterval(() => {
+                if (gameState.gameActive && gameState.timeLeft > 0) {
                     gameState.timeLeft--;
                     updateTimerDisplay();
                     
@@ -585,8 +814,8 @@
                     if (gameState.timeLeft <= 0) {
                         loseGame();
                     }
-                }, 1000);
-            }
+                }
+            }, 1000);
         }
         
         function stopTimer() {
@@ -608,8 +837,8 @@
         }
         
         function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-            const secs = (seconds % 60).toString().padStart(2, '0');
+            const mins = Math.floor(Math.max(0, seconds) / 60).toString().padStart(2, '0');
+            const secs = (Math.max(0, seconds) % 60).toString().padStart(2, '0');
             return `${mins}:${secs}`;
         }
         
@@ -651,12 +880,26 @@
             initGame();
         });
         
-        // Disable touch scrolling
+        // Prevent context menu on long press
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+        
+        // Disable touch scrolling and zooming
         document.addEventListener('touchmove', function(e) {
             e.preventDefault();
         }, { passive: false });
         
-        // Initialize the game
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
+        
+        // Initialize the game when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initGame();
+        });
+        
+        // Initialize the game immediately as well (in case DOMContentLoaded already fired)
         initGame();
     </script>
 </body>
