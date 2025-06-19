@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mobile Puzzle Game</title>
+    <title>Puzzle Challenge</title>
     <style>
         * {
             margin: 0;
@@ -76,6 +76,10 @@
             color: #ff7e5f;
         }
         
+        .time-left {
+            color: #4facfe;
+        }
+        
         .controls {
             display: flex;
             justify-content: center;
@@ -98,21 +102,8 @@
             min-width: 80px;
         }
         
-        .difficulty {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            margin: 8px 0;
-        }
-        
-        .difficulty-btn {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 5px 10px;
-            font-size: 0.7rem;
-        }
-        
-        .difficulty-btn.active {
-            background: linear-gradient(to right, #4facfe, #00f2fe);
+        button:active {
+            transform: scale(0.95);
         }
         
         .puzzle-container {
@@ -132,7 +123,6 @@
             width: 100%;
             height: 100%;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
             grid-gap: 2px;
             padding: 3px;
         }
@@ -149,6 +139,7 @@
             font-weight: bold;
             color: rgba(255, 255, 255, 0.8);
             text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            background: linear-gradient(135deg, #4CAF50, #2E8B57);
         }
         
         .puzzle-tile:active {
@@ -176,7 +167,8 @@
             transition: all 0.3s ease;
             width: 90%;
             max-width: 300px;
-            border: 2px solid #ff7e5f;
+            border: 2px solid;
+            box-shadow: 0 0 20px rgba(0,0,0,0.7);
         }
         
         .message.show {
@@ -188,13 +180,37 @@
         .message h2 {
             font-size: 1.5rem;
             margin-bottom: 10px;
-            color: #ff7e5f;
         }
         
         .message p {
             font-size: 1rem;
             margin-bottom: 15px;
             line-height: 1.4;
+        }
+        
+        .win-message {
+            border-color: #4CAF50;
+        }
+        
+        .win-message h2 {
+            color: #4CAF50;
+        }
+        
+        .lose-message {
+            border-color: #f44336;
+        }
+        
+        .lose-message h2 {
+            color: #f44336;
+        }
+        
+        .time-critical {
+            animation: pulse 0.5s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            from { color: #4facfe; }
+            to { color: #ff5252; }
         }
         
         footer {
@@ -205,12 +221,31 @@
             width: 100%;
             flex-shrink: 0;
         }
+        
+        .solution-notice {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .solution-notice.show {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>Slide Puzzle</h1>
-        <p style="font-size: 0.8rem;">Slide tiles into the empty space</p>
+        <h1>Puzzle Challenge</h1>
+        <p style="font-size: 0.8rem;">Solve before time runs out!</p>
     </header>
     
     <div class="game-container">
@@ -220,306 +255,409 @@
                 <div id="move-count" class="stat-value">0</div>
             </div>
             <div class="stat">
-                <div>Time</div>
-                <div id="timer" class="stat-value">00:00</div>
+                <div>Time Left</div>
+                <div id="time-left" class="stat-value time-left">02:00</div>
             </div>
             <div class="stat">
-                <div>Size</div>
-                <div id="difficulty-label" class="stat-value">4x4</div>
+                <div>Grid</div>
+                <div id="grid-size" class="stat-value">4x4</div>
             </div>
-        </div>
-        
-        <div class="difficulty">
-            <button class="difficulty-btn" data-difficulty="3">3x3</button>
-            <button class="difficulty-btn active" data-difficulty="4">4x4</button>
-            <button class="difficulty-btn" data-difficulty="5">5x5</button>
         </div>
         
         <div class="controls">
-            <button id="shuffle-btn">Shuffle</button>
-            <button id="reset-btn">New Game</button>
+            <button id="solve-btn">Show Solution</button>
         </div>
         
         <div class="puzzle-container">
+            <div id="solution-notice" class="solution-notice">Solution Preview (5s)</div>
             <div id="puzzle-board" class="puzzle-board"></div>
         </div>
     </div>
     
-    <div id="win-message" class="message">
-        <h2>You Win!</h2>
+    <div id="win-message" class="message win-message">
+        <h2>Congratulations!</h2>
+        <p>You solved the puzzle!</p>
         <p>Moves: <span id="final-moves">0</span></p>
-        <p>Time: <span id="final-time">00:00</span></p>
-        <button id="play-again">Play Again</button>
+        <p>Time Left: <span id="final-time">02:00</span></p>
+        <button id="play-again-btn">Play Again</button>
+    </div>
+    
+    <div id="lose-message" class="message lose-message">
+        <h2>Time's Up!</h2>
+        <p>You didn't solve the puzzle in time.</p>
+        <p>Grid: <span id="failed-grid">4x4</span></p>
+        <p>Moves: <span id="failed-moves">0</span></p>
+        <button id="try-again-btn">Try Again</button>
     </div>
     
     <footer>
-        <p>Slide Puzzle Game</p>
+        <p>Puzzle Challenge</p>
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Game state
-            const gameState = {
-                size: 4,
-                moves: 0,
-                time: 0,
-                timer: null,
-                gameActive: false,
-                tiles: [],
-                emptyIndex: 15
-            };
+        // Game Analytics Data
+        const gameAnalytics = {
+            gameId: generateId(),
+            startTime: new Date().toISOString(),
+            endTime: null,
+            result: null,
+            gridSize: null,
+            moves: 0,
+            timeTaken: 0,
+            timeLimit: 0,
+            solutionViewed: false
+        };
+
+        // Game state
+        const gameState = {
+            size: 4,
+            moves: 0,
+            timeLeft: 120, // 2 minutes in seconds
+            timer: null,
+            gameActive: false,
+            tiles: [],
+            emptyIndex: 15,
+            solutionShown: false,
+            originalTiles: [] // To store state before showing solution
+        };
+        
+        // Time limits based on grid size (in seconds)
+        const TIME_LIMITS = {
+            3: 90,   // 1.5 minutes for 3x3
+            4: 120,   // 2 minutes for 4x4
+            5: 180    // 3 minutes for 5x5
+        };
+        
+        // DOM elements
+        const elements = {
+            board: document.getElementById('puzzle-board'),
+            moveCount: document.getElementById('move-count'),
+            timeLeft: document.getElementById('time-left'),
+            gridSize: document.getElementById('grid-size'),
+            winMessage: document.getElementById('win-message'),
+            finalMoves: document.getElementById('final-moves'),
+            finalTime: document.getElementById('final-time'),
+            loseMessage: document.getElementById('lose-message'),
+            failedGrid: document.getElementById('failed-grid'),
+            failedMoves: document.getElementById('failed-moves'),
+            solveBtn: document.getElementById('solve-btn'),
+            playAgainBtn: document.getElementById('play-again-btn'),
+            tryAgainBtn: document.getElementById('try-again-btn'),
+            solutionNotice: document.getElementById('solution-notice')
+        };
+        
+        // Initialize the game with random grid size
+        function initGame() {
+            // Random grid size (3x3, 4x4, or 5x5)
+            const sizes = [3, 4, 5];
+            gameState.size = sizes[Math.floor(Math.random() * sizes.length)];
+            gameState.timeLeft = TIME_LIMITS[gameState.size];
             
-            // DOM elements
-            const elements = {
-                board: document.getElementById('puzzle-board'),
-                moveCount: document.getElementById('move-count'),
-                timer: document.getElementById('timer'),
-                winMessage: document.getElementById('win-message'),
-                finalMoves: document.getElementById('final-moves'),
-                finalTime: document.getElementById('final-time'),
-                shuffleBtn: document.getElementById('shuffle-btn'),
-                resetBtn: document.getElementById('reset-btn'),
-                playAgainBtn: document.getElementById('play-again'),
-                difficultyLabel: document.getElementById('difficulty-label')
-            };
+            // Update analytics
+            gameAnalytics.gridSize = `${gameState.size}x${gameState.size}`;
+            gameAnalytics.timeLimit = gameState.timeLeft;
+            gameAnalytics.gameId = generateId();
+            gameAnalytics.startTime = new Date().toISOString();
+            gameAnalytics.solutionViewed = false;
             
-            // Initialize the game
-            function initGame() {
-                stopTimer();
-                gameState.moves = 0;
-                gameState.time = 0;
-                gameState.gameActive = false;
-                updateMoveCount();
-                updateTimer();
+            stopTimer();
+            gameState.moves = 0;
+            gameState.gameActive = true;
+            gameState.solutionShown = false;
+            updateMoveCount();
+            updateTimerDisplay();
+            
+            elements.gridSize.textContent = `${gameState.size}x${gameState.size}`;
+            
+            createBoard();
+            shuffleTiles();
+            startTimer();
+        }
+        
+        // Create the puzzle board
+        function createBoard() {
+            elements.board.innerHTML = '';
+            elements.board.style.gridTemplateColumns = `repeat(${gameState.size}, 1fr)`;
+            elements.board.style.gridTemplateRows = `repeat(${gameState.size}, 1fr)`;
+            
+            const totalTiles = gameState.size * gameState.size;
+            gameState.tiles = Array.from({ length: totalTiles - 1 }, (_, i) => i + 1);
+            gameState.tiles.push(0); // 0 represents the empty tile
+            gameState.emptyIndex = totalTiles - 1;
+            
+            // Create tile elements
+            for (let i = 0; i < totalTiles; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'puzzle-tile';
+                tile.dataset.index = i;
                 
-                createBoard();
-                shuffleTiles();
-                startTimer();
+                if (gameState.tiles[i] === 0) {
+                    tile.classList.add('empty');
+                    tile.innerHTML = '';
+                } else {
+                    tile.innerHTML = gameState.tiles[i];
+                }
+                
+                tile.addEventListener('click', () => moveTile(i));
+                elements.board.appendChild(tile);
             }
+        }
+        
+        // Shuffle tiles ensuring solvable puzzle
+        function shuffleTiles() {
+            do {
+                // Fisher-Yates shuffle
+                for (let i = gameState.tiles.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [gameState.tiles[i], gameState.tiles[j]] = [gameState.tiles[j], gameState.tiles[i]];
+                }
+                
+                // Find empty tile
+                gameState.emptyIndex = gameState.tiles.indexOf(0);
+            } while (!isSolvable() || isAlreadySolved());
             
-            // Create the puzzle board
-            function createBoard() {
-                elements.board.innerHTML = '';
-                elements.board.style.gridTemplateColumns = `repeat(${gameState.size}, 1fr)`;
-                
-                const totalTiles = gameState.size * gameState.size;
-                gameState.tiles = Array.from({ length: totalTiles - 1 }, (_, i) => i + 1);
-                gameState.tiles.push(0); // 0 represents the empty tile
-                gameState.emptyIndex = totalTiles - 1;
-                
-                // Create tile elements
-                for (let i = 0; i < totalTiles; i++) {
-                    const tile = document.createElement('div');
-                    tile.className = 'puzzle-tile';
-                    tile.dataset.index = i;
-                    
-                    // Apply background based on position
-                    const row = Math.floor(i / gameState.size);
-                    const col = i % gameState.size;
-                    
-                    // Calculate background position for each tile
-                    const bgPosX = (100 / (gameState.size - 1)) * col;
-                    const bgPosY = (100 / (gameState.size - 1)) * row;
-                    
-                    tile.style.background = `
-                        linear-gradient(135deg, 
-                        #4CAF50 0%, 
-                        #2E8B57 25%, 
-                        #3CB371 50%, 
-                        #20B2AA 100%)
-                    `;
-                    
-                    tile.style.backgroundSize = `${gameState.size * 100}% ${gameState.size * 100}%`;
-                    tile.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
-                    
-                    if (gameState.tiles[i] === 0) {
-                        tile.classList.add('empty');
-                        tile.innerHTML = '';
-                    } else {
-                        tile.innerHTML = gameState.tiles[i];
-                    }
-                    
-                    tile.addEventListener('click', () => moveTile(i));
-                    elements.board.appendChild(tile);
+            updateBoard();
+        }
+        
+        // Check if puzzle is already solved (to prevent showing solved puzzle after shuffle)
+        function isAlreadySolved() {
+            for (let i = 0; i < gameState.tiles.length - 1; i++) {
+                if (gameState.tiles[i] !== i + 1) return false;
+            }
+            return gameState.tiles[gameState.tiles.length - 1] === 0;
+        }
+        
+        // Check if the puzzle is solvable
+        function isSolvable() {
+            // Inversions count
+            let inversions = 0;
+            const arr = gameState.tiles.filter(tile => tile !== 0);
+            
+            for (let i = 0; i < arr.length; i++) {
+                for (let j = i + 1; j < arr.length; j++) {
+                    if (arr[i] > arr[j]) inversions++;
                 }
             }
             
-            // Shuffle tiles
-            function shuffleTiles() {
-                gameState.gameActive = true;
-                
-                // Generate a solvable permutation
-                do {
-                    // Fisher-Yates shuffle
-                    for (let i = gameState.tiles.length - 1; i > 0; i--) {
-                        const j = Math.floor(Math.random() * (i + 1));
-                        [gameState.tiles[i], gameState.tiles[j]] = [gameState.tiles[j], gameState.tiles[i]];
-                    }
-                    
-                    // Find empty tile
-                    gameState.emptyIndex = gameState.tiles.indexOf(0);
-                } while (!isSolvable());
-                
-                updateBoard();
-            }
-            
-            // Check if the puzzle is solvable
-            function isSolvable() {
-                // Inversions count
-                let inversions = 0;
-                const arr = gameState.tiles.filter(tile => tile !== 0);
-                
-                for (let i = 0; i < arr.length; i++) {
-                    for (let j = i + 1; j < arr.length; j++) {
-                        if (arr[i] > arr[j]) inversions++;
-                    }
-                }
-                
-                // For even-sized boards
-                if (gameState.size % 2 === 0) {
-                    const emptyRow = Math.floor(gameState.emptyIndex / gameState.size);
-                    return (inversions + emptyRow) % 2 === 1;
-                }
-                
-                // For odd-sized boards
-                return inversions % 2 === 0;
-            }
-            
-            // Update board display
-            function updateBoard() {
-                const tiles = elements.board.children;
-                
-                for (let i = 0; i < gameState.tiles.length; i++) {
-                    const tile = tiles[i];
-                    const value = gameState.tiles[i];
-                    
-                    if (value === 0) {
-                        tile.classList.add('empty');
-                        tile.innerHTML = '';
-                    } else {
-                        tile.classList.remove('empty');
-                        tile.innerHTML = value;
-                    }
-                }
-            }
-            
-            // Move tile
-            function moveTile(index) {
-                if (!gameState.gameActive) return;
-                
+            // For even-sized boards
+            if (gameState.size % 2 === 0) {
                 const emptyRow = Math.floor(gameState.emptyIndex / gameState.size);
-                const emptyCol = gameState.emptyIndex % gameState.size;
-                const tileRow = Math.floor(index / gameState.size);
-                const tileCol = index % gameState.size;
+                return (inversions + emptyRow) % 2 === 1;
+            }
+            
+            // For odd-sized boards
+            return inversions % 2 === 0;
+        }
+        
+        // Show solution (arrange tiles correctly temporarily)
+        function showSolution() {
+            if (!gameState.gameActive || gameState.solutionShown) return;
+            
+            // Save current state
+            gameState.originalTiles = [...gameState.tiles];
+            gameState.originalEmptyIndex = gameState.emptyIndex;
+            
+            gameState.solutionShown = true;
+            gameState.tiles = Array.from({ length: gameState.size * gameState.size - 1 }, (_, i) => i + 1);
+            gameState.tiles.push(0);
+            gameState.emptyIndex = gameState.size * gameState.size - 1;
+            updateBoard();
+            
+            // Show notice
+            elements.solutionNotice.classList.add('show');
+            
+            // Mark solution viewed in analytics
+            gameAnalytics.solutionViewed = true;
+            
+            // Return to game after 5 seconds
+            setTimeout(() => {
+                elements.solutionNotice.classList.remove('show');
+                gameState.solutionShown = false;
+                gameState.tiles = [...gameState.originalTiles];
+                gameState.emptyIndex = gameState.originalEmptyIndex;
+                updateBoard();
+            }, 5000);
+        }
+        
+        // Update board display
+        function updateBoard() {
+            const tiles = elements.board.children;
+            
+            for (let i = 0; i < gameState.tiles.length; i++) {
+                const tile = tiles[i];
+                const value = gameState.tiles[i];
                 
-                // Check if tile is adjacent to empty space
-                const rowDiff = Math.abs(emptyRow - tileRow);
-                const colDiff = Math.abs(emptyCol - tileCol);
+                if (value === 0) {
+                    tile.classList.add('empty');
+                    tile.innerHTML = '';
+                } else {
+                    tile.classList.remove('empty');
+                    tile.innerHTML = value;
+                }
+            }
+        }
+        
+        // Move tile
+        function moveTile(index) {
+            if (!gameState.gameActive || gameState.solutionShown) return;
+            
+            const emptyRow = Math.floor(gameState.emptyIndex / gameState.size);
+            const emptyCol = gameState.emptyIndex % gameState.size;
+            const tileRow = Math.floor(index / gameState.size);
+            const tileCol = index % gameState.size;
+            
+            // Check if tile is adjacent to empty space
+            const rowDiff = Math.abs(emptyRow - tileRow);
+            const colDiff = Math.abs(emptyCol - tileCol);
+            
+            if ((rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1)) {
+                // Swap tiles
+                [gameState.tiles[gameState.emptyIndex], gameState.tiles[index]] = 
+                [gameState.tiles[index], gameState.tiles[gameState.emptyIndex]];
                 
-                if ((rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1)) {
-                    // Swap tiles
-                    [gameState.tiles[gameState.emptyIndex], gameState.tiles[index]] = 
-                    [gameState.tiles[index], gameState.tiles[gameState.emptyIndex]];
+                gameState.emptyIndex = index;
+                gameState.moves++;
+                updateMoveCount();
+                updateBoard();
+                
+                // Check win condition
+                if (checkWin()) {
+                    winGame();
+                }
+            }
+        }
+        
+        // Check win condition
+        function checkWin() {
+            for (let i = 0; i < gameState.tiles.length - 1; i++) {
+                if (gameState.tiles[i] !== i + 1) return false;
+            }
+            return gameState.tiles[gameState.tiles.length - 1] === 0;
+        }
+        
+        // Win game
+        function winGame() {
+            endGame(true);
+            elements.finalMoves.textContent = gameState.moves;
+            elements.finalTime.textContent = formatTime(gameState.timeLeft);
+            elements.winMessage.classList.add('show');
+            
+            // Send analytics to Android
+            sendGameResultToAndroid(true);
+        }
+        
+        // Lose game (time out)
+        function loseGame() {
+            endGame(false);
+            elements.failedGrid.textContent = `${gameState.size}x${gameState.size}`;
+            elements.failedMoves.textContent = gameState.moves;
+            elements.loseMessage.classList.add('show');
+            
+            // Send analytics to Android
+            sendGameResultToAndroid(false);
+        }
+        
+        // End game (common functionality for win/lose)
+        function endGame(isWin) {
+            stopTimer();
+            gameState.gameActive = false;
+            
+            // Update analytics
+            gameAnalytics.endTime = new Date().toISOString();
+            gameAnalytics.result = isWin ? 'win' : 'lose';
+            gameAnalytics.moves = gameState.moves;
+            gameAnalytics.timeTaken = TIME_LIMITS[gameState.size] - gameState.timeLeft;
+        }
+        
+        // Update move count display
+        function updateMoveCount() {
+            elements.moveCount.textContent = gameState.moves;
+        }
+        
+        // Timer functions
+        function startTimer() {
+            if (!gameState.timer) {
+                gameState.timer = setInterval(() => {
+                    gameState.timeLeft--;
+                    updateTimerDisplay();
                     
-                    gameState.emptyIndex = index;
-                    gameState.moves++;
-                    updateMoveCount();
-                    updateBoard();
-                    
-                    // Check win condition
-                    if (checkWin()) {
-                        winGame();
+                    // Check if time ran out
+                    if (gameState.timeLeft <= 0) {
+                        loseGame();
                     }
-                }
+                }, 1000);
             }
-            
-            // Check win condition
-            function checkWin() {
-                for (let i = 0; i < gameState.tiles.length - 1; i++) {
-                    if (gameState.tiles[i] !== i + 1) return false;
-                }
-                return gameState.tiles[gameState.tiles.length - 1] === 0;
+        }
+        
+        function stopTimer() {
+            if (gameState.timer) {
+                clearInterval(gameState.timer);
+                gameState.timer = null;
             }
+        }
+        
+        function updateTimerDisplay() {
+            elements.timeLeft.textContent = formatTime(gameState.timeLeft);
             
-            // Win game
-            function winGame() {
-                stopTimer();
-                gameState.gameActive = false;
-                
-                elements.finalMoves.textContent = gameState.moves;
-                elements.finalTime.textContent = formatTime(gameState.time);
-                elements.winMessage.classList.add('show');
+            // Add critical time effect when less than 30 seconds
+            if (gameState.timeLeft <= 30) {
+                elements.timeLeft.classList.add('time-critical');
+            } else {
+                elements.timeLeft.classList.remove('time-critical');
             }
+        }
+        
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        }
+        
+        // Generate unique ID for game session
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+        
+        // Send game result to Android WebView
+        function sendGameResultToAndroid(isWin) {
+            const resultData = {
+                gameId: gameAnalytics.gameId,
+                result: isWin ? 'win' : 'lose',
+                gridSize: `${gameState.size}x${gameState.size}`,
+                moves: gameState.moves,
+                timeTaken: TIME_LIMITS[gameState.size] - gameState.timeLeft,
+                timeLimit: TIME_LIMITS[gameState.size],
+                date: new Date().toISOString(),
+                solutionViewed: gameAnalytics.solutionViewed
+            };
             
-            // Update move count display
-            function updateMoveCount() {
-                elements.moveCount.textContent = gameState.moves;
+            // For Android WebView integration
+            if (window.AndroidBridge) {
+                AndroidBridge.onGameComplete(JSON.stringify(resultData));
+            } else {
+                console.log('Game result:', resultData);
+                // This will be caught by your WebView's JavaScript interface
             }
-            
-            // Timer functions
-            function startTimer() {
-                if (!gameState.timer) {
-                    gameState.timer = setInterval(() => {
-                        gameState.time++;
-                        updateTimer();
-                    }, 1000);
-                }
-            }
-            
-            function stopTimer() {
-                if (gameState.timer) {
-                    clearInterval(gameState.timer);
-                    gameState.timer = null;
-                }
-            }
-            
-            function updateTimer() {
-                elements.timer.textContent = formatTime(gameState.time);
-            }
-            
-            function formatTime(seconds) {
-                const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-                const secs = (seconds % 60).toString().padStart(2, '0');
-                return `${mins}:${secs}`;
-            }
-            
-            // Event listeners
-            elements.shuffleBtn.addEventListener('click', () => {
-                shuffleTiles();
-            });
-            
-            elements.resetBtn.addEventListener('click', () => {
-                initGame();
-            });
-            
-            elements.playAgainBtn.addEventListener('click', () => {
-                elements.winMessage.classList.remove('show');
-                initGame();
-            });
-            
-            // Difficulty buttons
-            document.querySelectorAll('.difficulty-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.difficulty-btn').forEach(b => {
-                        b.classList.remove('active');
-                    });
-                    btn.classList.add('active');
-                    
-                    gameState.size = parseInt(btn.dataset.difficulty);
-                    elements.difficultyLabel.textContent = `${gameState.size}x${gameState.size}`;
-                    
-                    initGame();
-                });
-            });
-            
-            // Disable touch scrolling
-            document.addEventListener('touchmove', function(e) {
-                e.preventDefault();
-            }, { passive: false });
-            
-            // Initialize the game
+        }
+        
+        // Event listeners
+        elements.solveBtn.addEventListener('click', showSolution);
+        elements.playAgainBtn.addEventListener('click', () => {
+            elements.winMessage.classList.remove('show');
             initGame();
         });
+        elements.tryAgainBtn.addEventListener('click', () => {
+            elements.loseMessage.classList.remove('show');
+            initGame();
+        });
+        
+        // Disable touch scrolling
+        document.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+        
+        // Initialize the game
+        initGame();
     </script>
 </body>
 </html>
